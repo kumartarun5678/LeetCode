@@ -9,44 +9,65 @@
  *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
  * };
  */
-
-
-
 class Solution {
 public:
     TreeNode* replaceValueInTree(TreeNode* root) {
-        root->val = 0;
-        dfs(std::vector<TreeNode*>{root});
-        return root;
-    }
-
-private:
-    void dfs(std::vector<TreeNode*> arr) {
-        if (arr.empty()) return;
-
+        if(root == NULL){
+            return NULL;
+        }
+        queue<TreeNode*>q;
+        q.push(root);
+        q.push(NULL);
         int sum = 0;
-        for (auto node : arr) {
-            if (!node) continue;
-            if (node->left) sum += node->left->val;
-            if (node->right) sum += node->right->val;
-        }
-
-        std::vector<TreeNode*> childArr;
-        for (auto node : arr) {
-            int curSum = 0;
-            if (node->left) curSum += node->left->val;
-            if (node->right) curSum += node->right->val;
-
-            if (node->left) {
-                node->left->val = sum - curSum;
-                childArr.push_back(node->left);
+        vector<int>level;
+        while(!q.empty()){
+            TreeNode*curr = q.front();
+            q.pop();
+            if(curr == NULL){
+                level.push_back(sum);
+                sum = 0;
+                if(!q.empty()){
+                    q.push(NULL);
+                }
             }
-            if (node->right) {
-                node->right->val = sum - curSum;
-                childArr.push_back(node->right);
+            else{
+                sum += curr->val;
+                if(curr->left != NULL){
+                    q.push(curr->left);
+                }
+                if(curr->right != NULL){
+                    q.push(curr->right);
+                }
             }
         }
-
-        dfs(childArr);
+        q.push(root);
+        root->val = 0;
+        int i = 1;
+         while (i < level.size() && !q.empty()){
+            int n = q.size();
+            while(n--){
+                TreeNode*curr = q.front();
+                q.pop();
+                int sumsib  = 0;
+                if(curr->left != NULL){
+                    sumsib+=curr->left->val;
+                }
+                
+                if(curr->right!= NULL){
+                    sumsib += curr->right->val;
+                }
+                
+                if(curr->left != NULL){
+                    curr->left->val = level[i] - sumsib;
+                    q.push(curr->left);
+                }
+                if(curr->right != NULL){
+                    curr->right->val = level[i] - sumsib;
+                    q.push(curr->right);
+                }
+            }
+            i++;
+        }
+        return root;
     }
 };
