@@ -1,12 +1,14 @@
 class Solution {
 public:
-    bool checkIfExist(std::vector<int>& arr) {
-        unordered_set<int> st;
-        for (int num : arr) {
-            if (st.count(2 * num) || (num % 2 == 0 && st.count(num / 2))) {
-                return true;
+    bool checkIfExist(vector<int>& arr) {
+        int n = arr.size();
+
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                if (arr[i] == 2 * arr[j] || arr[j] == arr[i] * 2) {
+                    return true;
+                }
             }
-            st.insert(num);
         }
         return false;
     }
